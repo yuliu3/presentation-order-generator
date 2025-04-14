@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentation Order Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background-color: #ddd;
+            border: none;
+            cursor: pointer;
+            flex-grow: 1;
+            text-align: center;
+        }
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .student-inputs {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+        .groups-list {
+            margin-top: 20px;
+        }
+        .group-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .student-item {
+            margin-left: 20px;
+        }
+        .presentation-order {
+            margin-top: 20px;
+        }
+        .presentation-group {
+            background-color: #e8f4f8;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .admin-password {
+            margin-bottom: 20px;
+        }
+        .error {
+            color: red;
+            margin-top: 5px;
+        }
+        .success {
+            color: green;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Presentation Order Generator</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('student')">Student Registration</button>
+            <button class="tab" onclick="switchTab('instructor')">Instructor Dashboard</button>
+        </div>
+        
+        <!-- Student Registration Tab -->
+        <div id="student" class="tab-content active">
+            <h2>Register Your Group</h2>
+            <form id="studentForm">
+                <div class="form-group">
+                    <label for="groupName">Group Name (Optional):</label>
+                    <input type="text" id="groupName" placeholder="Enter a name for your group (optional)">
+                </div>
+                
+                <h3>Student 1 (Required)</h3>
+                <div class="student-inputs">
+                    <div class="form-group">
+                        <label for="student1Name">Name:</label>
+                        <input type="text" id="student1Name" required placeholder="Enter name">
+                    </div>
+                    <div class="form-group">
+                        <label for="student1ID">Student ID:</label>
+                        <input type="text" id="student1ID" required placeholder="Enter student ID">
+                    </div>
+                </div>
+                
+                <h3>Student 2 (Optional)</h3>
+                <div class="student-inputs">
+                    <div class="form-group">
+                        <label for="student2Name">Name:</label>
+                        <input type="text" id="student2Name" placeholder="Enter name">
+                    </div>
+                    <div class="form-group">
+                        <label for="student2ID">Student ID:</label>
+                        <input type="text" id="student2ID" placeholder="Enter student ID">
+                    </div>
+                </div>
+                
+                <h3>Student 3 (Optional)</h3>
+                <div class="student-inputs">
+                    <div class="form-group">
+                        <label for="student3Name">Name:</label>
+                        <input type="text" id="student3Name" placeholder="Enter name">
+                    </div>
+                    <div class="form-group">
+                        <label for="student3ID">Student ID:</label>
+                        <input type="text" id="student3ID" placeholder="Enter student ID">
+                    </div>
+                </div>
+                
+                <button type="submit">Register Group</button>
+            </form>
+            <div id="registrationMessage"></div>
+        </div>
+        
+        <!-- Instructor Dashboard Tab -->
+        <div id="instructor" class="tab-content">
+            <h2>Instructor Dashboard</h2>
+            
+            <div class="admin-password">
+                <div class="form-group">
+                    <label for="password">Enter Admin Password:</label>
+                    <input type="password" id="password" placeholder="Enter password">
+                    <button onclick="validatePassword()">Login</button>
+                    <div id="passwordMessage" class="error"></div>
+                </div>
+            </div>
+            
+            <div id="adminContent" style="display: none;">
+                <h3>Registered Groups</h3>
+                <div id="groupsList" class="groups-list">
+                    <p>No groups registered yet.</p>
+                </div>
+                
+                <button onclick="generatePresentationOrder()">Generate Random Presentation Order</button>
+                
+                <div id="presentationOrder" class="presentation-order">
+                    <h3>Presentation Order</h3>
+                    <div id="orderList"></div>
+                </div>
+                
+                <button onclick="clearAllGroups()">Clear All Groups</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default admin password - you should change this in a real application
+        const ADMIN_PASSWORD = "admin123";
+        
+        // Store for all registered groups
+        let groups = [];
+        let presentationOrder = [];
+        
+        // Initialize data in memory when page loads
+        window.onload = function() {
+            // No localStorage loading needed - we'll just use in-memory arrays
+            updateGroupsList();
+            updatePresentationOrder();
+        };
+        
+        // Switch between tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // Validate instructor password
+        function validatePassword() {
+            const password = document.getElementById('password').value;
+            const messageElement = document.getElementById('passwordMessage');
+            
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('adminContent').style.display = 'block';
+                messageElement.textContent = '';
+                updateGroupsList();
+                updatePresentationOrder();
+            } else {
+                messageElement.textContent = 'Incorrect password. Please try again.';
+                document.getElementById('adminContent').style.display = 'none';
+            }
+        }
+        
+        // Handle form submission for student registration
+        document.getElementById('studentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const groupName = document.getElementById('groupName').value.trim();
+            
+            const student1Name = document.getElementById('student1Name').value.trim();
+            const student1ID = document.getElementById('student1ID').value.trim();
+            
+            const student2Name = document.getElementById('student2Name').value.trim();
+            const student2ID = document.getElementById('student2ID').value.trim();
+            
+            const student3Name = document.getElementById('student3Name').value.trim();
+            const student3ID = document.getElementById('student3ID').value.trim();
+            
+            // Validate at least one student
+            if (!student1Name || !student1ID) {
+                showRegistrationMessage('At least one student is required with both name and ID.', 'error');
+                return;
+            }
+            
+            // Create students array
+            const students = [];
+            
+            if (student1Name && student1ID) {
+                students.push({ name: student1Name, id: student1ID });
+            }
+            
+            if (student2Name && student2ID) {
+                students.push({ name: student2Name, id: student2ID });
+            }
+            
+            if (student3Name && student3ID) {
+                students.push({ name: student3Name, id: student3ID });
+            }
+            
+            // Check for duplicate IDs
+            const uniqueIds = new Set(students.map(s => s.id));
+            if (uniqueIds.size !== students.length) {
+                showRegistrationMessage('Each student must have a unique ID.', 'error');
+                return;
+            }
+            
+            // Add group to the list
+            const group = {
+                id: Date.now().toString(),
+                name: groupName || `Group ${groups.length + 1}`,
+                students: students
+            };
+            
+            groups.push(group);
+            
+            // No need to save to localStorage - using in-memory only
+            
+            // Reset form
+            document.getElementById('studentForm').reset();
+            
+            // Show success message
+            showRegistrationMessage('Group successfully registered!', 'success');
+            
+            // Update the groups list if admin panel is open
+            updateGroupsList();
+        });
+        
+        // Show registration message
+        function showRegistrationMessage(message, type) {
+            const messageElement = document.getElementById('registrationMessage');
+            messageElement.textContent = message;
+            messageElement.className = type;
+            
+            // Clear message after 5 seconds
+            setTimeout(() => {
+                messageElement.textContent = '';
+                messageElement.className = '';
+            }, 5000);
+        }
+        
+        // Update the groups list in the admin panel
+        function updateGroupsList() {
+            const groupsList = document.getElementById('groupsList');
+            
+            if (groups.length === 0) {
+                groupsList.innerHTML = '<p>No groups registered yet.</p>';
+                return;
+            }
+            
+            let html = '';
+            groups.forEach((group, index) => {
+                html += `
+                    <div class="group-item">
+                        <h4>${group.name}</h4>
+                        <p>Students:</p>
+                        <ul>
+                            ${group.students.map(student => 
+                                `<li class="student-item">${student.name} (ID: ${student.id})</li>`
+                            ).join('')}
+                        </ul>
+                    </div>
+                `;
+            });
+            
+            groupsList.innerHTML = html;
+        }
+        
+        // Generate random presentation order
+        function generatePresentationOrder() {
+            if (groups.length === 0) {
+                document.getElementById('orderList').innerHTML = '<p>No groups to present.</p>';
+                return;
+            }
+            
+            // Create a copy of the groups array
+            const shuffledGroups = [...groups];
+            
+            // Shuffle the array using Fisher-Yates algorithm
+            for (let i = shuffledGroups.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledGroups[i], shuffledGroups[j]] = [shuffledGroups[j], shuffledGroups[i]];
+            }
+            
+            // Assign new presentation names based on the order
+            presentationOrder = shuffledGroups.map((group, index) => {
+                return {
+                    originalId: group.id,
+                    presentationName: `Presentation Group ${index + 1}`,
+                    originalName: group.name,
+                    students: group.students
+                };
+            });
+            
+            // No need to save to localStorage - using in-memory only
+            
+            // Update the UI
+            updatePresentationOrder();
+        }
+        
+        // Update the presentation order display
+        function updatePresentationOrder() {
+            const orderList = document.getElementById('orderList');
+            
+            if (presentationOrder.length === 0) {
+                orderList.innerHTML = '<p>Generate a presentation order first.</p>';
+                return;
+            }
+            
+            let html = '';
+            presentationOrder.forEach((group, index) => {
+                html += `
+                    <div class="presentation-group">
+                        <h4>${group.presentationName} (Original: ${group.originalName})</h4>
+                        <p>Students:</p>
+                        <ul>
+                            ${group.students.map(student => 
+                                `<li class="student-item">${student.name} (ID: ${student.id})</li>`
+                            ).join('')}
+                        </ul>
+                    </div>
+                `;
+            });
+            
+            orderList.innerHTML = html;
+        }
+        
+        // Clear all groups
+        function clearAllGroups() {
+            if (confirm('Are you sure you want to clear all registered groups? This cannot be undone.')) {
+                groups = [];
+                presentationOrder = [];
+                // Just clearing the in-memory arrays
+                updateGroupsList();
+                updatePresentationOrder();
+            }
+        }
+    </script>
+</body>
+</html>
