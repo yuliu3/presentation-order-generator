@@ -18,31 +18,9 @@
             border-radius: 5px;
             background-color: #f9f9f9;
         }
-        h1 {
+        h1, h2, h3 {
             color: #2c3e50;
             text-align: center;
-        }
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-        }
-        .tab {
-            padding: 10px 20px;
-            background-color: #ddd;
-            border: none;
-            cursor: pointer;
-            flex-grow: 1;
-            text-align: center;
-        }
-        .tab.active {
-            background-color: #3498db;
-            color: white;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
         }
         .form-group {
             margin-bottom: 15px;
@@ -52,7 +30,7 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], input[type="password"] {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
@@ -101,8 +79,12 @@
             padding: 10px;
             margin-bottom: 10px;
         }
-        .admin-password {
-            margin-bottom: 20px;
+        .admin-controls {
+            background-color: #f8f1e8;
+            border: 1px solid #e67e22;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
         }
         .error {
             color: red;
@@ -112,19 +94,22 @@
             color: green;
             margin-top: 5px;
         }
+        .hidden {
+            display: none;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Presentation Order Generator</h1>
         
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('student')">Student Registration</button>
-            <button class="tab" onclick="switchTab('instructor')">Instructor Dashboard</button>
-        </div>
-        
-        <!-- Student Registration Tab -->
-        <div id="student" class="tab-content active">
+        <!-- Registration Section -->
+        <div class="section">
             <h2>Register Your Group</h2>
             <form id="studentForm">
                 <div class="form-group">
@@ -173,33 +158,32 @@
             <div id="registrationMessage"></div>
         </div>
         
-        <!-- Instructor Dashboard Tab -->
-        <div id="instructor" class="tab-content">
-            <h2>Instructor Dashboard</h2>
-            
-            <div class="admin-password">
-                <div class="form-group">
-                    <label for="password">Enter Admin Password:</label>
-                    <input type="password" id="password" placeholder="Enter password">
-                    <button onclick="validatePassword()">Login</button>
-                    <div id="passwordMessage" class="error"></div>
-                </div>
+        <!-- Registered Groups Section -->
+        <div class="section">
+            <h2>Registered Groups</h2>
+            <div id="groupsList" class="groups-list">
+                <p>No groups registered yet.</p>
             </div>
-            
-            <div id="adminContent" style="display: none;">
-                <h3>Registered Groups</h3>
-                <div id="groupsList" class="groups-list">
-                    <p>No groups registered yet.</p>
+        </div>
+        
+        <!-- Admin Controls Section -->
+        <div class="section admin-controls">
+            <h2>Instructor Controls</h2>
+            <div id="adminPanel">
+                <div class="form-group">
+                    <label for="adminPassword">Admin Password:</label>
+                    <input type="password" id="adminPassword" placeholder="Enter admin password">
                 </div>
-                
-                <button onclick="generatePresentationOrder()">Generate Random Presentation Order</button>
-                
-                <div id="presentationOrder" class="presentation-order">
-                    <h3>Presentation Order</h3>
-                    <div id="orderList"></div>
-                </div>
-                
-                <button onclick="clearAllGroups()">Clear All Groups</button>
+                <button id="generateOrderBtn" onclick="authenticateAndGenerate()">Generate Presentation Order</button>
+                <div id="passwordMessage" class="error"></div>
+            </div>
+        </div>
+        
+        <!-- Presentation Order Section -->
+        <div class="section">
+            <h2>Presentation Order</h2>
+            <div id="presentationOrder" class="presentation-order">
+                <p>Waiting for instructor to generate the presentation order...</p>
             </div>
         </div>
     </div>
@@ -211,47 +195,17 @@
         // Store for all registered groups
         let groups = [];
         let presentationOrder = [];
-        
-        // Initialize data in memory when page loads
-        window.onload = function() {
-            // No localStorage loading needed - we'll just use in-memory arrays
-            updateGroupsList();
-            updatePresentationOrder();
-        };
-        
-        // Switch between tabs
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        }
-        
-        // Validate instructor password
-        function validatePassword() {
-            const password = document.getElementById('password').value;
-            const messageElement = document.getElementById('passwordMessage');
-            
-            if (password === ADMIN_PASSWORD) {
-                document.getElementById('adminContent').style.display = 'block';
-                messageElement.textContent = '';
-                updateGroupsList();
-                updatePresentationOrder();
-            } else {
-                messageElement.textContent = 'Incorrect password. Please try again.';
-                document.getElementById('adminContent').style.display = 'none';
-            }
-        }
+        let orderGenerated = false;
         
         // Handle form submission for student registration
         document.getElementById('studentForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // Only allow registration if order hasn't been generated yet
+            if (orderGenerated) {
+                showRegistrationMessage('Registration is closed. The presentation order has already been generated.', 'error');
+                return;
+            }
             
             const groupName = document.getElementById('groupName').value.trim();
             
@@ -285,11 +239,21 @@
                 students.push({ name: student3Name, id: student3ID });
             }
             
-            // Check for duplicate IDs
+            // Check for duplicate IDs in this submission
             const uniqueIds = new Set(students.map(s => s.id));
             if (uniqueIds.size !== students.length) {
                 showRegistrationMessage('Each student must have a unique ID.', 'error');
                 return;
+            }
+            
+            // Check for duplicate IDs with existing groups
+            for (const group of groups) {
+                for (const student of group.students) {
+                    if (students.some(s => s.id === student.id)) {
+                        showRegistrationMessage(`Student ID ${student.id} is already registered in another group.`, 'error');
+                        return;
+                    }
+                }
             }
             
             // Add group to the list
@@ -301,15 +265,13 @@
             
             groups.push(group);
             
-            // No need to save to localStorage - using in-memory only
-            
             // Reset form
             document.getElementById('studentForm').reset();
             
             // Show success message
             showRegistrationMessage('Group successfully registered!', 'success');
             
-            // Update the groups list if admin panel is open
+            // Update the groups list
             updateGroupsList();
         });
         
@@ -326,7 +288,7 @@
             }, 5000);
         }
         
-        // Update the groups list in the admin panel
+        // Update the groups list
         function updateGroupsList() {
             const groupsList = document.getElementById('groupsList');
             
@@ -353,12 +315,40 @@
             groupsList.innerHTML = html;
         }
         
+        // Authenticate and generate presentation order
+        function authenticateAndGenerate() {
+            const password = document.getElementById('adminPassword').value;
+            const messageElement = document.getElementById('passwordMessage');
+            
+            if (password === ADMIN_PASSWORD) {
+                generatePresentationOrder();
+                messageElement.textContent = '';
+                // Hide the password field and button after successful generation
+                document.getElementById('adminPanel').innerHTML = 
+                    '<p class="success">Presentation order has been generated successfully!</p>';
+            } else {
+                messageElement.textContent = 'Incorrect password. Please try again.';
+            }
+        }
+        
         // Generate random presentation order
         function generatePresentationOrder() {
             if (groups.length === 0) {
-                document.getElementById('orderList').innerHTML = '<p>No groups to present.</p>';
+                document.getElementById('presentationOrder').innerHTML = 
+                    '<p>No groups to present.</p>';
                 return;
             }
+            
+            // Set flag to prevent further registrations
+            orderGenerated = true;
+            
+            // Disable registration form
+            document.querySelectorAll('#studentForm input, #studentForm button').forEach(element => {
+                element.disabled = true;
+            });
+            
+            document.getElementById('studentForm').insertAdjacentHTML('afterbegin', 
+                '<div class="error">Registration is now closed. The presentation order has been generated.</div>');
             
             // Create a copy of the groups array
             const shuffledGroups = [...groups];
@@ -379,22 +369,20 @@
                 };
             });
             
-            // No need to save to localStorage - using in-memory only
-            
             // Update the UI
             updatePresentationOrder();
         }
         
         // Update the presentation order display
         function updatePresentationOrder() {
-            const orderList = document.getElementById('orderList');
+            const orderList = document.getElementById('presentationOrder');
             
             if (presentationOrder.length === 0) {
-                orderList.innerHTML = '<p>Generate a presentation order first.</p>';
+                orderList.innerHTML = '<p>Waiting for instructor to generate the presentation order...</p>';
                 return;
             }
             
-            let html = '';
+            let html = '<h3>Final Presentation Order</h3>';
             presentationOrder.forEach((group, index) => {
                 html += `
                     <div class="presentation-group">
@@ -412,16 +400,10 @@
             orderList.innerHTML = html;
         }
         
-        // Clear all groups
-        function clearAllGroups() {
-            if (confirm('Are you sure you want to clear all registered groups? This cannot be undone.')) {
-                groups = [];
-                presentationOrder = [];
-                // Just clearing the in-memory arrays
-                updateGroupsList();
-                updatePresentationOrder();
-            }
-        }
+        // Initialize when page loads
+        window.onload = function() {
+            updateGroupsList();
+        };
     </script>
 </body>
 </html>
