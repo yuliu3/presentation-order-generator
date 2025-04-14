@@ -3,407 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presentation Order Generator</title>
+    <title>COMP4322 Presentation Registration</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
         }
         .container {
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        h1, h2, h3 {
-            color: #2c3e50;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
             text-align: center;
         }
-        .form-group {
-            margin-bottom: 15px;
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 25px;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+        p {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 20px;
         }
-        input[type="text"], input[type="number"], input[type="password"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
+        .btn {
             background-color: #3498db;
             color: white;
-            padding: 10px 15px;
+            padding: 12px 24px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
         }
-        button:hover {
+        .btn:hover {
             background-color: #2980b9;
         }
-        .student-inputs {
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            background-color: #fff;
-        }
-        .groups-list {
-            margin-top: 20px;
-        }
-        .group-item {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-        .student-item {
-            margin-left: 20px;
-        }
-        .presentation-order {
-            margin-top: 20px;
-        }
-        .presentation-group {
-            background-color: #e8f4f8;
-            border: 1px solid #3498db;
-            border-radius: 4px;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-        .admin-controls {
-            background-color: #f8f1e8;
-            border: 1px solid #e67e22;
-            border-radius: 4px;
-            padding: 15px;
-            margin: 20px 0;
-        }
-        .error {
-            color: red;
-            margin-top: 5px;
-        }
-        .success {
-            color: green;
-            margin-top: 5px;
-        }
-        .hidden {
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
             display: none;
         }
-        .section {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Presentation Order Generator</h1>
+        <h1>COMP4322 Presentation Registration</h1>
+        <p>Welcome to the registration page for COMP4322 course presentations. Click the button below to proceed to the registration system.</p>
         
-        <!-- Registration Section -->
-        <div class="section">
-            <h2>Register Your Group</h2>
-            <form id="studentForm">
-                <div class="form-group">
-                    <label for="groupName">Group Name (Optional):</label>
-                    <input type="text" id="groupName" placeholder="Enter a name for your group (optional)">
-                </div>
-                
-                <h3>Student 1 (Required)</h3>
-                <div class="student-inputs">
-                    <div class="form-group">
-                        <label for="student1Name">Name:</label>
-                        <input type="text" id="student1Name" required placeholder="Enter name">
-                    </div>
-                    <div class="form-group">
-                        <label for="student1ID">Student ID:</label>
-                        <input type="text" id="student1ID" required placeholder="Enter student ID">
-                    </div>
-                </div>
-                
-                <h3>Student 2 (Optional)</h3>
-                <div class="student-inputs">
-                    <div class="form-group">
-                        <label for="student2Name">Name:</label>
-                        <input type="text" id="student2Name" placeholder="Enter name">
-                    </div>
-                    <div class="form-group">
-                        <label for="student2ID">Student ID:</label>
-                        <input type="text" id="student2ID" placeholder="Enter student ID">
-                    </div>
-                </div>
-                
-                <h3>Student 3 (Optional)</h3>
-                <div class="student-inputs">
-                    <div class="form-group">
-                        <label for="student3Name">Name:</label>
-                        <input type="text" id="student3Name" placeholder="Enter name">
-                    </div>
-                    <div class="form-group">
-                        <label for="student3ID">Student ID:</label>
-                        <input type="text" id="student3ID" placeholder="Enter student ID">
-                    </div>
-                </div>
-                
-                <button type="submit">Register Group</button>
-            </form>
-            <div id="registrationMessage"></div>
-        </div>
+        <div class="loader" id="loader"></div>
         
-        <!-- Registered Groups Section -->
-        <div class="section">
-            <h2>Registered Groups</h2>
-            <div id="groupsList" class="groups-list">
-                <p>No groups registered yet.</p>
-            </div>
-        </div>
-        
-        <!-- Admin Controls Section -->
-        <div class="section admin-controls">
-            <h2>Instructor Controls</h2>
-            <div id="adminPanel">
-                <div class="form-group">
-                    <label for="adminPassword">Admin Password:</label>
-                    <input type="password" id="adminPassword" placeholder="Enter admin password">
-                </div>
-                <button id="generateOrderBtn" onclick="authenticateAndGenerate()">Generate Presentation Order</button>
-                <div id="passwordMessage" class="error"></div>
-            </div>
-        </div>
-        
-        <!-- Presentation Order Section -->
-        <div class="section">
-            <h2>Presentation Order</h2>
-            <div id="presentationOrder" class="presentation-order">
-                <p>Waiting for instructor to generate the presentation order...</p>
-            </div>
-        </div>
+        <a href="http://44.211.152.88:5000" class="btn" id="redirectBtn">Go to Registration System</a>
     </div>
 
     <script>
-        // Default admin password - you should change this in a real application
-        const ADMIN_PASSWORD = "admin123";
-        
-        // Store for all registered groups
-        let groups = [];
-        let presentationOrder = [];
-        let orderGenerated = false;
-        
-        // Handle form submission for student registration
-        document.getElementById('studentForm').addEventListener('submit', function(e) {
+        document.getElementById('redirectBtn').addEventListener('click', function(e) {
             e.preventDefault();
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('redirectBtn').style.display = 'none';
             
-            // Only allow registration if order hasn't been generated yet
-            if (orderGenerated) {
-                showRegistrationMessage('Registration is closed. The presentation order has already been generated.', 'error');
-                return;
-            }
-            
-            const groupName = document.getElementById('groupName').value.trim();
-            
-            const student1Name = document.getElementById('student1Name').value.trim();
-            const student1ID = document.getElementById('student1ID').value.trim();
-            
-            const student2Name = document.getElementById('student2Name').value.trim();
-            const student2ID = document.getElementById('student2ID').value.trim();
-            
-            const student3Name = document.getElementById('student3Name').value.trim();
-            const student3ID = document.getElementById('student3ID').value.trim();
-            
-            // Validate at least one student
-            if (!student1Name || !student1ID) {
-                showRegistrationMessage('At least one student is required with both name and ID.', 'error');
-                return;
-            }
-            
-            // Create students array
-            const students = [];
-            
-            if (student1Name && student1ID) {
-                students.push({ name: student1Name, id: student1ID });
-            }
-            
-            if (student2Name && student2ID) {
-                students.push({ name: student2Name, id: student2ID });
-            }
-            
-            if (student3Name && student3ID) {
-                students.push({ name: student3Name, id: student3ID });
-            }
-            
-            // Check for duplicate IDs in this submission
-            const uniqueIds = new Set(students.map(s => s.id));
-            if (uniqueIds.size !== students.length) {
-                showRegistrationMessage('Each student must have a unique ID.', 'error');
-                return;
-            }
-            
-            // Check for duplicate IDs with existing groups
-            for (const group of groups) {
-                for (const student of group.students) {
-                    if (students.some(s => s.id === student.id)) {
-                        showRegistrationMessage(`Student ID ${student.id} is already registered in another group.`, 'error');
-                        return;
-                    }
-                }
-            }
-            
-            // Add group to the list
-            const group = {
-                id: Date.now().toString(),
-                name: groupName || `Group ${groups.length + 1}`,
-                students: students
-            };
-            
-            groups.push(group);
-            
-            // Reset form
-            document.getElementById('studentForm').reset();
-            
-            // Show success message
-            showRegistrationMessage('Group successfully registered!', 'success');
-            
-            // Update the groups list
-            updateGroupsList();
+            // Redirect after showing the loader for a brief moment
+            setTimeout(function() {
+                window.location.href = 'http://44.211.152.88:5000';
+            }, 800);
         });
-        
-        // Show registration message
-        function showRegistrationMessage(message, type) {
-            const messageElement = document.getElementById('registrationMessage');
-            messageElement.textContent = message;
-            messageElement.className = type;
-            
-            // Clear message after 5 seconds
-            setTimeout(() => {
-                messageElement.textContent = '';
-                messageElement.className = '';
-            }, 5000);
-        }
-        
-        // Update the groups list
-        function updateGroupsList() {
-            const groupsList = document.getElementById('groupsList');
-            
-            if (groups.length === 0) {
-                groupsList.innerHTML = '<p>No groups registered yet.</p>';
-                return;
-            }
-            
-            let html = '';
-            groups.forEach((group, index) => {
-                html += `
-                    <div class="group-item">
-                        <h4>${group.name}</h4>
-                        <p>Students:</p>
-                        <ul>
-                            ${group.students.map(student => 
-                                `<li class="student-item">${student.name} (ID: ${student.id})</li>`
-                            ).join('')}
-                        </ul>
-                    </div>
-                `;
-            });
-            
-            groupsList.innerHTML = html;
-        }
-        
-        // Authenticate and generate presentation order
-        function authenticateAndGenerate() {
-            const password = document.getElementById('adminPassword').value;
-            const messageElement = document.getElementById('passwordMessage');
-            
-            if (password === ADMIN_PASSWORD) {
-                generatePresentationOrder();
-                messageElement.textContent = '';
-                // Hide the password field and button after successful generation
-                document.getElementById('adminPanel').innerHTML = 
-                    '<p class="success">Presentation order has been generated successfully!</p>';
-            } else {
-                messageElement.textContent = 'Incorrect password. Please try again.';
-            }
-        }
-        
-        // Generate random presentation order
-        function generatePresentationOrder() {
-            if (groups.length === 0) {
-                document.getElementById('presentationOrder').innerHTML = 
-                    '<p>No groups to present.</p>';
-                return;
-            }
-            
-            // Set flag to prevent further registrations
-            orderGenerated = true;
-            
-            // Disable registration form
-            document.querySelectorAll('#studentForm input, #studentForm button').forEach(element => {
-                element.disabled = true;
-            });
-            
-            document.getElementById('studentForm').insertAdjacentHTML('afterbegin', 
-                '<div class="error">Registration is now closed. The presentation order has been generated.</div>');
-            
-            // Create a copy of the groups array
-            const shuffledGroups = [...groups];
-            
-            // Shuffle the array using Fisher-Yates algorithm
-            for (let i = shuffledGroups.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffledGroups[i], shuffledGroups[j]] = [shuffledGroups[j], shuffledGroups[i]];
-            }
-            
-            // Assign new presentation names based on the order
-            presentationOrder = shuffledGroups.map((group, index) => {
-                return {
-                    originalId: group.id,
-                    presentationName: `Presentation Group ${index + 1}`,
-                    originalName: group.name,
-                    students: group.students
-                };
-            });
-            
-            // Update the UI
-            updatePresentationOrder();
-        }
-        
-        // Update the presentation order display
-        function updatePresentationOrder() {
-            const orderList = document.getElementById('presentationOrder');
-            
-            if (presentationOrder.length === 0) {
-                orderList.innerHTML = '<p>Waiting for instructor to generate the presentation order...</p>';
-                return;
-            }
-            
-            let html = '<h3>Final Presentation Order</h3>';
-            presentationOrder.forEach((group, index) => {
-                html += `
-                    <div class="presentation-group">
-                        <h4>${group.presentationName} (Original: ${group.originalName})</h4>
-                        <p>Students:</p>
-                        <ul>
-                            ${group.students.map(student => 
-                                `<li class="student-item">${student.name} (ID: ${student.id})</li>`
-                            ).join('')}
-                        </ul>
-                    </div>
-                `;
-            });
-            
-            orderList.innerHTML = html;
-        }
-        
-        // Initialize when page loads
+
+        // Auto-redirect option (uncomment to enable)
+        /*
         window.onload = function() {
-            updateGroupsList();
-        };
+            setTimeout(function() {
+                window.location.href = 'http://44.211.152.88:5000';
+            }, 3000); // Redirect after 3 seconds
+        }
+        */
     </script>
 </body>
 </html>
